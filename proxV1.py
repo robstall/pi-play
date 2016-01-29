@@ -2,27 +2,24 @@
 
 import RPi.GPIO as GPIO
 import time
-import SensorLib
 
-##def ping(trigger, echo):
-##    GPIO.output(trigger, GPIO.HIGH)
-##    time.sleep(0.00001)
-##    GPIO.output(trigger, GPIO.LOW)
-##    while GPIO.input(echo) == 0:
-##        signalOff = time.time()
-##    while GPIO.input(echo) == 1 or time.time() > signalOff + 200000:
-##        signalOn = time.time()
-##    distance = (signalOn - signalOff) * 17000
-##    return distance
+def ping(trigger, echo):
+    GPIO.output(trigger, GPIO.HIGH)
+    time.sleep(0.00001)
+    GPIO.output(trigger, GPIO.LOW)
+    while GPIO.input(echo) == 0:
+        signalOff = time.time()
+    while GPIO.input(echo) == 1 or time.time() > signalOff + 200000:
+        signalOn = time.time()
+    distance = (signalOn - signalOff) * 17000
+    return distance
 
 GPIO.setmode(GPIO.BOARD)
 
-#pingIn = 38
-#pingOut = 40
-#GPIO.setup(pingOut, GPIO.OUT)
-#GPIO.setup(pingIn, GPIO.IN)
-
-prox = SensorLib.Prox(38, 40)
+pingIn = 38
+pingOut = 40
+GPIO.setup(pingOut, GPIO.OUT)
+GPIO.setup(pingIn, GPIO.IN)
 
 RED = 7
 
@@ -36,7 +33,7 @@ GPIO.setup(GREEN, GPIO.OUT)
 
 for i in range(0, 100):
     time.sleep(0.25)
-    distance = prox.ping()
+    distance = ping(pingOut, pingIn)
     print distance
     if distance <= 40:
         GPIO.output(RED, GPIO.HIGH)
