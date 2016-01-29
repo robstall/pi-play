@@ -15,14 +15,23 @@ def ping(trigger, echo):
     return distance
 
 GPIO.setmode(GPIO.BOARD)
+
 pingIn = 38
 pingOut = 40
 GPIO.setup(pingOut, GPIO.OUT)
 GPIO.setup(pingIn, GPIO.IN)
 
+redPin = 7
+GPIO.setup(redPin, GPIO.OUT)
+
 for i in range(0, 600):
     time.sleep(0.1)
-    print ping(pingOut, pingIn)
+    distance = ping(pingOut, pingIn)
+    print distance
+    if distance <= 25:
+        GPIO.output(redPin, GPIO.HIGH)
+    elif distance > 25:
+        GPIO.output(redPin, GPIO.LOW)
 
 GPIO.cleanup()
 
