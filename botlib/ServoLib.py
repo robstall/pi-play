@@ -5,6 +5,7 @@ import time
 
 class Servo:
    def __init__(self, pin, cycle_ms, pulse_ms_list):
+      """Init the servo with pin, cycle time and a list of pulse lengths that are typicaly [reverse, stop, forward]"""
       self.pin = pin
       self.frequency = 1000 / cycle_ms
       self.dutycycles= []
@@ -16,13 +17,16 @@ class Servo:
       self.pwm = GPIO.PWM(self.pin, self.frequency)
 
    def start(self, idx):
+      """Switches the pulse duty cycle to the one and idx and starts send pulses on pin"""
       self.pwm.ChangeDutyCycle(self.dutycycles[idx])
       self.pwm.start(self.dutycycles[idx])
 
    def stop(self):
+      """Stop sending pulses on pin"""
       self.pwm.stop()
 
    def description(self):
+      """Return a string that describes configuration"""
       return "pin=" + str(self.pin) + " freq=" + str(self.frequency) + " dutycycles=" + str(self.dutycycles)
 
 if __name__ == "__main__":
