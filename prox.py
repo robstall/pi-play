@@ -21,17 +21,34 @@ pingOut = 40
 GPIO.setup(pingOut, GPIO.OUT)
 GPIO.setup(pingIn, GPIO.IN)
 
-redPin = 7
-GPIO.setup(redPin, GPIO.OUT)
+RED = 7
 
-for i in range(0, 600):
-    time.sleep(0.1)
+GREEN = 33
+
+YELLOW = 11
+
+GPIO.setup(RED, GPIO.OUT)
+GPIO.setup(YELLOW, GPIO.OUT)
+GPIO.setup(GREEN, GPIO.OUT)
+
+for i in range(0, 100):
+    time.sleep(0.25)
     distance = ping(pingOut, pingIn)
     print distance
-    if distance <= 25:
-        GPIO.output(redPin, GPIO.HIGH)
-    elif distance > 25:
-        GPIO.output(redPin, GPIO.LOW)
-
+    if distance <= 40:
+        GPIO.output(RED, GPIO.HIGH)
+        GPIO.output(YELLOW, GPIO.LOW)
+        GPIO.output(GREEN, GPIO.LOW)
+    elif distance > 40 and distance <= 75:
+        GPIO.output(RED, GPIO.LOW)
+        GPIO.output(YELLOW, GPIO.HIGH)
+        GPIO.output(GREEN, GPIO.LOW)
+    elif distance > 75:
+        GPIO.output(RED, GPIO.LOW)
+        GPIO.output(YELLOW, GPIO.LOW)
+        GPIO.output(GREEN, GPIO.HIGH)
+    
 GPIO.cleanup()
+
+print("Complete")
 
