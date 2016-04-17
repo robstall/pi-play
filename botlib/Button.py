@@ -31,11 +31,19 @@ class Button (threading.Thread):
       time.sleep(1) # Need to give the pin a chance to settle
       self.cancelled = False
       timeunlatch = time.clock()
+      reg = 0
       while not self.cancelled:
          time.sleep(0.05)
          timenow = time.clock()
-         pinstate = GPIO.input(self.pin)
-         #print(pinstate, self.state, self.normal, timenow, timeunlatch)
+
+         # The pinstate goes to 1 only if there are 3 hits a row
+         reg = 7 & (reg << 1) | (GPIO.input(self.pin) & 1)
+         if (reg == 7):
+            pinstate = 1
+         else:
+            pinstate = 0
+            
+         print(reg, pinstate, self.state, self.normal, timenow, timeunlatch)
          if (pinstate != self.state and timenow > timeunlatch):
             timeunlatch = timenow + 0.01
             self.state = pinstate
