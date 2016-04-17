@@ -130,9 +130,10 @@ class Sumo:
         self.led(0)
 
 if __name__ == "__main__":
-    sumo = Sumo() # Init our sumobot
-    sumo.crouch() # Wait for the button press
-    #sumo.test() # Begin test
-    time.sleep(1)
-    sumo.wrestle() # Wrestle!
-    sumo.shutdown()
+    while (True) :
+    	sumo = Sumo() # Init our sumobot
+	sumo.crouch() # Wait for the button press
+    	#sumo.test() # Begin test
+    	time.sleep(0.5)
+    	sumo.wrestle() # Wrestle!
+    	sumo.shutdown()
