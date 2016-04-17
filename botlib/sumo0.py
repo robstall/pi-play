@@ -88,14 +88,14 @@ class Sumo:
     def line_evade(self, pin):
         self.rsrv.start(Sumo.REV)
         self.lsrv.start(Sumo.REV)
-        time.sleep(0.3)
+        time.sleep(0.5)
         if (pin == Sumo.RLN_PIN):
             self.rsrv.start(Sumo.FWD)
             self.lsrv.start(Sumo.REV)
         else:
             self.rsrv.start(Sumo.REV)
             self.lsrv.start(Sumo.FWD)
-        time.sleep(1.5)
+        time.sleep(1.0)
         self.rsrv.start(Sumo.STOP)
         self.lsrv.start(Sumo.STOP)
 
@@ -104,7 +104,7 @@ class Sumo:
            self.lsrv.start(Sumo.FWD)
         else:
            self.lsrv.start(Sumo.REV)
-        self.rsrv.start(Sumo.FWD)
+           self.rsrv.start(Sumo.FWD)
         
     def crouch(self):
         print "crouch"
@@ -121,19 +121,21 @@ class Sumo:
         
         while not self.btn_pressed:
             self.hunt()
-            if (self.line_detected(Sumo.RLN_PIN)):
-                self.line_evade(Sumo.RLN_PIN)
-            if (self.line_detected(Sumo.LLN_PIN)):
-                self.line_evade(Sumo.LLN_PIN)
+            if self.prox.ping() > 15:
+                if (self.line_detected(Sumo.RLN_PIN)):
+                    self.line_evade(Sumo.RLN_PIN)
+                if (self.line_detected(Sumo.LLN_PIN)):
+                    self.line_evade(Sumo.LLN_PIN)
 
         self.btn_pressed = False
         self.led(0)
 
 if __name__ == "__main__":
-    while (True) :
-    	sumo = Sumo() # Init our sumobot
-	sumo.crouch() # Wait for the button press
-    	#sumo.test() # Begin test
-    	time.sleep(0.5)
-    	sumo.wrestle() # Wrestle!
-    	sumo.shutdown()
+    while True:
+        sumo = Sumo() # Init our sumobot
+        sumo.crouch() # Wait for the button press
+        #sumo.test() # Begin test
+        time.sleep(0.25)
+        sumo.wrestle() # Wrestle!
+        sumo.shutdown()
+        break
