@@ -4,6 +4,7 @@ import RPi.GPIO as GPIO
 import time
 import ServoLib
 import Button
+import ProxLib
 
 
 class Sumo:
@@ -14,6 +15,8 @@ class Sumo:
     LSRV_PIN = 18
     LED_PIN = 37
     BTN_PIN = 7
+    PROX_TRIG_PIN = 11
+    PROX_ECHO_PIN = 13
 
     # direction
     FWD = 0
@@ -27,6 +30,7 @@ class Sumo:
         self.btn_pressed = False
         self.rsrv = ServoLib.Servo(Sumo.RSRV_PIN, 20, [1.3, 1.5, 1.7])
         self.lsrv = ServoLib.Servo(Sumo.LSRV_PIN, 20, [1.7, 1.5, 1.3])
+        self.prox = ProxLib.HC_SR04(Sumo.PROX_TRIG_PIN, Sumo.PROX_ECHO_PIN)
         
     def shutdown(self):
         print 'shutdown'
@@ -70,10 +74,18 @@ class Sumo:
 
     def wrestle(self):
         print "wrestle start"
-    
+        self.led(1)
+        self.btn_pressed = False
+        while not self.btn_pressed:
+            print "thinking"
+            print self.prox.ping()
+            time.sleep(1)
+        self.btn_pressed = False
+        self.led(0)
 
 if __name__ == "__main__":
     sumo = Sumo() # Init our sumobot
     sumo.crouch() # Wait for the button press
-    sumo.test() # Begin wrestling
+    #sumo.test() # Begin test
+    sumo.wrestle() # Wrestle!
     sumo.shutdown()
