@@ -9,6 +9,7 @@ class Servo:
       self.pin = pin
       self.frequency = 1000 / cycle_ms
       self.dutycycles= []
+      self.dc_idx = -1
       for p in pulse_ms_list:
          self.dutycycles.append(p / cycle_ms * 100)
       print "Servo: " + self.description()
@@ -18,13 +19,15 @@ class Servo:
 
    def start(self, idx):
       """Switches the pulse duty cycle to the one and idx and starts send pulses on pin"""
-      print self.pin, self.dutycycles[idx]
-      self.pwm.ChangeDutyCycle(self.dutycycles[idx])
-      self.pwm.start(self.dutycycles[idx])
+      if self.dc_idx != idx:
+         self.pwm.ChangeDutyCycle(self.dutycycles[idx])
+         self.pwm.start(self.dutycycles[idx])
+         self.dc_idx = idx
 
    def stop(self):
       """Stop sending pulses on pin"""
       self.pwm.stop()
+      self.dc_idx = -1
 
    def description(self):
       """Return a string that describes configuration"""

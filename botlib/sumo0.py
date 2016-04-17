@@ -83,27 +83,27 @@ class Sumo:
         if GPIO.input(pin):
             return False
         else:
-            print "line", pin
             return True
 
     def line_evade(self, pin):
-        print "line_evade"
+        self.rsrv.start(Sumo.REV)
+        self.lsrv.start(Sumo.REV)
+        time.sleep(0.3)
         if (pin == Sumo.RLN_PIN):
-            print "right"
             self.rsrv.start(Sumo.FWD)
             self.lsrv.start(Sumo.REV)
         else:
-            print "left"
             self.rsrv.start(Sumo.REV)
             self.lsrv.start(Sumo.FWD)
-        time.sleep(1)
+        time.sleep(1.5)
         self.rsrv.start(Sumo.STOP)
         self.lsrv.start(Sumo.STOP)
 
     def hunt(self):
-        print "hunt"
-        #print self.prox.ping()
-        self.lsrv.start(Sumo.FWD)
+        if self.prox.ping() < 75:
+           self.lsrv.start(Sumo.FWD)
+        else:
+           self.lsrv.start(Sumo.REV)
         self.rsrv.start(Sumo.FWD)
         
     def crouch(self):
@@ -121,13 +121,10 @@ class Sumo:
         
         while not self.btn_pressed:
             self.hunt()
-            
             if (self.line_detected(Sumo.RLN_PIN)):
                 self.line_evade(Sumo.RLN_PIN)
             if (self.line_detected(Sumo.LLN_PIN)):
                 self.line_evade(Sumo.LLN_PIN)
-        
-            time.sleep(0.5)
 
         self.btn_pressed = False
         self.led(0)
