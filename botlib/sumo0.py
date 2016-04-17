@@ -3,6 +3,7 @@
 import RPi.GPIO as GPIO
 import time
 import ServoLib
+import Button
 
 
 class Sumo:
@@ -12,6 +13,7 @@ class Sumo:
     RSRV_PIN = 16
     LSRV_PIN = 18
     LED_PIN = 37
+    BTN_PIN = 7
 
     # direction
     FWD = 0
@@ -21,14 +23,20 @@ class Sumo:
     def __init__(self):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(Sumo.LED_PIN, GPIO.OUT)
+        self.btn = Button.Button(Sumo.BTN_PIN, self.button_down)
+        self.btn_pressed = False
         self.rsrv = ServoLib.Servo(Sumo.RSRV_PIN, 20, [1.3, 1.5, 1.7])
         self.lsrv = ServoLib.Servo(Sumo.LSRV_PIN, 20, [1.7, 1.5, 1.3])
         
     def shutdown(self):
+        print 'shutdown'
+        self.btn.cancel()
+        time.sleep(0.5)
         GPIO.cleanup()
 
     def test(self):
-        self.blink_led()
+        print 'test'
+        self.led(1)
         
         # Run right servo
         self.rsrv.start(Sumo.FWD)
@@ -40,15 +48,32 @@ class Sumo:
         time.sleep(1)
         self.lsrv.stop()
 
-        self.blink_led()
+        self.led(0)
 
-    def blink_led(self):
-        GPIO.output(Sumo.LED_PIN, GPIO.HIGH)
-        time.sleep(1)
-        GPIO.output(Sumo.LED_PIN, GPIO.LOW)
+    def led(self, state):
+        GPIO.output(Sumo.LED_PIN, state)
+
+    def toggle_led(self):
+        GPIO.output(Sumo.LED_PIN, not GPIO.input(Sumo.LED_PIN))
+
+    def button_down(self, pin):
+        print "button_down"
+        self.btn_pressed = True
+
+    def crouch(self):
+        print "crouch"
+        self.btn.start()
+        while not self.btn_pressed:
+            self.toggle_led()
+            time.sleep(1)
+        self.btn_pressed = False
+
+    def wrestle(self):
+        print "wrestle start"
     
 
 if __name__ == "__main__":
-    sumo = Sumo()
-    sumo.test()
+    sumo = Sumo() # Init our sumobot
+    sumo.crouch() # Wait for the button press
+    sumo.test() # Begin wrestling
     sumo.shutdown()

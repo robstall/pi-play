@@ -25,6 +25,7 @@ class Button (threading.Thread):
       self.cancelled = True
 
    def run(self):
+      """Loop continously watching for pin state changes with a bit of latching and debouncing thrown in"""
       GPIO.setmode(GPIO.BOARD)
       GPIO.setup(self.pin, GPIO.IN)
       time.sleep(1) # Need to give the pin a chance to settle
@@ -34,13 +35,14 @@ class Button (threading.Thread):
          time.sleep(0.05)
          timenow = time.clock()
          pinstate = GPIO.input(self.pin)
-         print(pinstate, self.state, self.normal, timenow, timeunlatch)
+         #print(pinstate, self.state, self.normal, timenow, timeunlatch)
          if (pinstate != self.state and timenow > timeunlatch):
             timeunlatch = timenow + 0.01
             self.state = pinstate
             if self.state != self.normal:
                self.callback(self.pin)
                print "button down", self.pin
+      print "button thread halted", self.pin
 
 
 # Testing...
