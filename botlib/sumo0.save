@@ -33,39 +33,29 @@ class Sumo:
         self.rsrv = ServoLib.Servo(Sumo.RSRV_PIN, 20, [1.3, 1.5, 1.7])
         self.lsrv = ServoLib.Servo(Sumo.LSRV_PIN, 20, [1.7, 1.5, 1.3])
         self.prox = ProxLib.HC_SR04(Sumo.PROX_TRIG_PIN, Sumo.PROX_ECHO_PIN)
-        GPIO.setup(Sumo.RLN_PIN, GPIO.IN)
-        GPIO.setup(Sumo.LLN_PIN, GPIO.IN)
+        GPIO.setup(RLN_PIN, GPIO.IN)
+        GPIO.setup(LLN_PIN, GPIO.IN)
         
     def shutdown(self):
         print 'shutdown'
         self.btn.cancel()
-        self.rsrv.stop()
-        self.lsrv.stop()
         time.sleep(0.5)
         GPIO.cleanup()
 
     def test(self):
         print 'test'
         self.led(1)
-
-        self.btn_pressed = False
-        while not self.btn_pressed:
-            if self.line_detected(Sumo.LLN_PIN):
-                self.rsrv.start(Sumo.REV)
-                self.lsrv.start(Sumo.FWD)
-                time.sleep(1.0)
-                self.rsrv.start(Sumo.STOP)
-                self.lsrv.start(Sumo.STOP)
-            if self.line_detected(Sumo.RLN_PIN):
-                self.rsrv.start(Sumo.FWD)
-                self.lsrv.start(Sumo.REV)
-                time.sleep(1.0)
-                self.rsrv.start(Sumo.STOP)
-                self.lsrv.start(Sumo.STOP)
-        self.btn_pressed = False
-        self.rsrv.stop()
-        self.lsrv.stop()
         
+        # Run right servo
+        self.rsrv.start(Sumo.FWD)
+        time.sleep(1)
+        self.rsrv.stop()
+
+        # Run left servo
+        self.lsrv.start(Sumo.FWD)
+        time.sleep(1)
+        self.lsrv.stop()
+
         self.led(0)
 
     def led(self, state):
@@ -85,26 +75,6 @@ class Sumo:
         else:
             print "line", pin
             return True
-
-    def line_evade(self, pin):
-        print "line_evade"
-        if (pin == Sumo.RLN_PIN):
-            print "right"
-            self.rsrv.start(Sumo.FWD)
-            self.lsrv.start(Sumo.REV)
-        else:
-            print "left"
-            self.rsrv.start(Sumo.REV)
-            self.lsrv.start(Sumo.FWD)
-        time.sleep(1)
-        self.rsrv.start(Sumo.STOP)
-        self.lsrv.start(Sumo.STOP)
-
-    def hunt(self):
-        print "hunt"
-        #print self.prox.ping()
-        self.lsrv.start(Sumo.FWD)
-        self.rsrv.start(Sumo.FWD)
         
     def crouch(self):
         print "crouch"
@@ -118,17 +88,10 @@ class Sumo:
         print "wrestle start"
         self.led(1)
         self.btn_pressed = False
-        
         while not self.btn_pressed:
-            self.hunt()
-            
-            if (self.line_detected(Sumo.RLN_PIN)):
-                self.line_evade(Sumo.RLN_PIN)
-            if (self.line_detected(Sumo.LLN_PIN)):
-                self.line_evade(Sumo.LLN_PIN)
-        
-            time.sleep(0.5)
-
+            print "thinking"
+            print self.prox.ping()
+            time.sleep(1)
         self.btn_pressed = False
         self.led(0)
 
@@ -136,6 +99,5 @@ if __name__ == "__main__":
     sumo = Sumo() # Init our sumobot
     sumo.crouch() # Wait for the button press
     #sumo.test() # Begin test
-    time.sleep(1)
     sumo.wrestle() # Wrestle!
     sumo.shutdown()

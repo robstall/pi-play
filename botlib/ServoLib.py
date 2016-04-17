@@ -18,6 +18,7 @@ class Servo:
 
    def start(self, idx):
       """Switches the pulse duty cycle to the one and idx and starts send pulses on pin"""
+      print self.pin, self.dutycycles[idx]
       self.pwm.ChangeDutyCycle(self.dutycycles[idx])
       self.pwm.start(self.dutycycles[idx])
 
